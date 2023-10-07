@@ -58,15 +58,16 @@ if __name__ == "__main__":
     sentences, labels = read_conll_file(dataname)
     j = convert_to_json(sentences, labels)
     with open(f"{dataname}.json", "wt") as f:
-        newj = []
-        j_len = len(j)
-        for i in range(100):
-            for template_json in j:
-                newj.append(
-                    {
-                        "id": str(i * j_len + template_json["id"]),
-                        "ner_tags": template_json["ner_tags"],
-                        "tokens": template_json["tokens"],
-                    }
-                )
-        json.dump(newj, f)
+        # newj = []
+        # j_len = len(j)
+        # for i in range(100):
+        #     for template_json in j:
+        #         newj.append(
+        #             {
+        #                 "id": str(i * j_len + template_json["id"]),
+        #                 "ner_tags": template_json["ner_tags"],
+        #                 "tokens": template_json["tokens"],
+        #             }
+        #         )
+        # json.dump(newj, f)
+        json.dump(j,f)

@@ -6,7 +6,7 @@
 
 example:
 ```
-file: 1.txt
+# file: 1.txt
 [Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [01][Ma10p_1080p][x265_flac_aac].mkv
 [Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [02][Ma10p_1080p][x265_flac].mkv
 [Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [03][Ma10p_1080p][x265_flac_aac].mkv
