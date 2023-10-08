@@ -9,7 +9,7 @@ from transformers import (
 )
 from datasets import load_dataset
 
-from label2id import label2id, id2label
+from labels import label2id, id2label
 
 if len(sys.argv) < 2:
     print("no data given")
@@ -26,7 +26,13 @@ test_dataset = load_dataset(path="json", data_files=dataname, split=f"train[{l}:
 
 
 def tokenize_and_align_labels(examples):
-    tokenized_inputs = tokenizer(examples["tokens"], truncation=True, is_split_into_words=True)
+    tokenized_inputs = tokenizer(
+        examples["tokens"],
+        truncation=True,
+        is_split_into_words=True,
+        max_length=64,
+        padding="max_length",
+    )
 
     labels = []
     for i, label in enumerate(examples[f"ner_tags"]):
@@ -43,14 +49,12 @@ def tokenize_and_align_labels(examples):
             previous_word_idx = word_idx
         labels.append(label_ids)
 
-    # tokenized_inputs["labels"] = examples["ner_tags"]
     tokenized_inputs["labels"] = labels
     return tokenized_inputs
 
 
 train_dataset = train_dataset.map(tokenize_and_align_labels, batched=True)
 test_dataset = test_dataset.map(tokenize_and_align_labels, batched=True)
-
 data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 model = BertForTokenClassification.from_pretrained(
     "bert-base-multilingual-cased",
@@ -78,4 +82,5 @@ trainer = Trainer(
     tokenizer=tokenizer,
     data_collator=data_collator,
 )
+
 trainer.train()

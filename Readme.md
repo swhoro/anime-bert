@@ -22,55 +22,32 @@ example:
 [Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [13][Ma10p_1080p][x265_flac_aac].mkv
 ```
 
-由于不支持下划线，因此需要替换: `make replace dataname=1.txt`
-
 ## 2.标注数据
 
-使用 [label-studio](https://labelstud.io/) 标注数据，导出 .conll 格式
+使用 [doccano](https://github.com/doccano/doccano) 标注数据，导出 .jsonl 格式
 
 example: 
 ```
-# file: data.conll
-# 第一行额外数据需手动删除
-[ -X- _ O
-Airota -X- _ B-字幕组
-& -X- _ O
-Nekomoe -X- _ B-字幕组
-kissaten -X- _ I-字幕组
-& -X- _ O
-VCB-Studio -X- _ B-字幕组
-] -X- _ O
-Yagate -X- _ B-视频名
-Kimi -X- _ I-视频名
-ni -X- _ I-视频名
-Naru -X- _ I-视频名
-[ -X- _ O
-01 -X- _ B-集数
-] -X- _ O
-[ -X- _ O
-Ma10p -X- _ O
-1080p -X- _ B-分辨率
-] -X- _ O
-[ -X- _ O
-x265 -X- _ B-视频编码
-flac -X- _ B-音频编码
-aac -X- _ B-音频编码
-] -X- _ O
-.mkv -X- _ O
+# file: data.jsonl
+{"id": 3, "text": "[Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [01][Ma10p_1080p][x265_flac_aac].mkv", "Comments": [], "label": [[1, 7, "字幕组"], [8, 24, "字幕组"], [25, 35, "字幕组"], [37, 56, "视频名"], [58, 60, "集数"], [68, 73, "分辨率"], [75, 79, "视频编码"], [80, 84, "音频编码"], [85, 88, "音频编码"]]}
+{"id": 4, "text": "[Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [02][Ma10p_1080p][x265_flac].mkv", "Comments": [], "label": [[1, 7, "字幕组"], [8, 24, "字幕组"], [25, 35, "字幕组"], [37, 56, "视频名"], [58, 60, "集数"], [68, 73, "分辨率"], [75, 79, "视频编码"], [80, 84, "音频编码"]]}
+{"id": 5, "text": "[Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [03][Ma10p_1080p][x265_flac_aac].mkv", "Comments": [], "label": [[1, 7, "字幕组"], [8, 24, "字幕组"], [25, 35, "字幕组"], [37, 56, "视频名"], [58, 60, "集数"], [68, 73, "分辨率"], [75, 79, "视频编码"], [80, 84, "音频编码"], [85, 88, "音频编码"]]}
+{"id": 6, "text": "[Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [04][Ma10p_1080p][x265_flac_aac].mkv", "Comments": [], "label": [[1, 7, "字幕组"], [8, 24, "字幕组"], [25, 35, "字幕组"], [37, 56, "视频名"], [58, 60, "集数"], [68, 73, "分辨率"], [75, 79, "视频编码"], [80, 84, "音频编码"], [85, 88, "音频编码"]]}
+{"id": 7, "text": "[Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [05][Ma10p_1080p][x265_flac].mkv", "Comments": [], "label": [[1, 7, "字幕组"], [8, 24, "字幕组"], [25, 35, "字幕组"], [37, 56, "视频名"], [58, 60, "集数"], [68, 73, "分辨率"], [75, 79, "视频编码"], [80, 84, "音频编码"]]}
 ```
 
 ## 3.数据预处理
 
 example:
-```makefile
-make preprocess dataname=data.conll
+```
+python preprocess.py data.jsonl
 ```
 
-同目录下的 `${dataname}.txt.json` 是最终训练需要的数据
+同目录下的 `${dataname}.new.json` 是最终训练需要的数据
 
 ## 4.训练
 
 example:
-```makefile
-make train dataname=data.conll.txt.json
+```
+python train.py data.jsonl.new.json
 ```

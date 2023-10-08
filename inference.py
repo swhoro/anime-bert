@@ -2,45 +2,61 @@ from transformers import pipeline
 import json
 
 
-input_str = "[Nekomoe kissaten&LoliHouse] Migi to Dali - 01 [WebRip 1080p HEVC-10bit AAC ASSx2].mkv"
+input_str = (
+    "[Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [01][Ma10p_1080p][x265_flac_aac].mkv"
+)
 
-p = pipeline("ner", model="outdir/checkpoint-60")
+p = pipeline("ner", model="outdir/checkpoint-336")
 result = str(p(input_str))
-print(result)
 result = json.loads(result.replace("'", '"'))
 
+# ner_struct: {
+#     "label_name": label_word_location
+# }
 ner_struct = {}
-tr = {}
+# label_word_location: {
+#     "label": str,
+#     "from": int,
+#     "to": int,
+# }
+label_word_location = {}
 for res in result:
     if res["entity"].startswith("B-"):
         if not res["word"].startswith("##"):
-            if "label" in tr:
-                if tr["label"] in ner_struct:
-                    ner_struct[tr["label"]].append({"from": tr["from"], "to": tr["to"]})
+            if "label" in label_word_location:
+                if label_word_location["label"] in ner_struct:
+                    ner_struct[label_word_location["label"]].append(
+                        {"from": label_word_location["from"], "to": label_word_location["to"]}
+                    )
                 else:
-                    ner_struct[tr["label"]] = [{"from": tr["from"], "to": tr["to"]}]
+                    ner_struct[label_word_location["label"]] = [
+                        {"from": label_word_location["from"], "to": label_word_location["to"]}
+                    ]
 
-            tr["label"] = res["entity"].split("-")[1]
-            tr["from"] = res["start"]
-            tr["to"] = res["end"]
+            label_word_location["label"] = res["entity"].split("-")[1]
+            label_word_location["from"] = res["start"]
+            label_word_location["to"] = res["end"]
         else:
-            if res["entity"].split("-")[1] == tr["label"]:
-                tr["to"] = res["end"]
+            if res["entity"].split("-")[1] == label_word_location["label"]:
+                label_word_location["to"] = res["end"]
     else:
         # start with I-
-        tr["to"] = res["end"]
+        label_word_location["to"] = res["end"]
 
-if tr["label"] in ner_struct:
-    ner_struct[tr["label"]].append({"from": tr["from"], "to": tr["to"]})
+# add the last result
+if label_word_location["label"] in ner_struct:
+    ner_struct[label_word_location["label"]].append(
+        {"from": label_word_location["from"], "to": label_word_location["to"]}
+    )
 else:
-    ner_struct[tr["label"]] = [{"from": tr["from"], "to": tr["to"]}]
+    ner_struct[label_word_location["label"]] = [
+        {"from": label_word_location["from"], "to": label_word_location["to"]}
+    ]
 
-print(ner_struct)
-
-for k, value_list in ner_struct.items():
+for label, value_list in ner_struct.items():
     vs = []
     for value in value_list:
         vs.append(input_str[value["from"] : value["to"]])
-    ner_struct[k] = vs
+    ner_struct[label] = vs
 
 print(ner_struct)
