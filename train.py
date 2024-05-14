@@ -1,8 +1,8 @@
 import sys
 
 from transformers import (
-    BertTokenizerFast,
-    BertForTokenClassification,
+    AutoTokenizer,
+    AutoModelForTokenClassification,
     Trainer,
     TrainingArguments,
     DataCollatorForTokenClassification,
@@ -18,7 +18,7 @@ if len(sys.argv) < 2:
 dataname = sys.argv[1]
 
 # load tokenizer
-tokenizer: BertTokenizerFast = BertTokenizerFast.from_pretrained("bert-base-multilingual-cased")
+tokenizer = AutoTokenizer.from_pretrained("distilbert-base-multilingual-cased")
 # load data
 l = int(len(load_dataset(path="json", data_files=dataname)["train"]) * 0.8)
 train_dataset = load_dataset(path="json", data_files=dataname, split=f"train[:{l}]")
@@ -56,14 +56,14 @@ def tokenize_and_align_labels(examples):
 train_dataset = train_dataset.map(tokenize_and_align_labels, batched=True)
 test_dataset = test_dataset.map(tokenize_and_align_labels, batched=True)
 data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
-model = BertForTokenClassification.from_pretrained(
-    "bert-base-multilingual-cased",
+model = AutoModelForTokenClassification.from_pretrained(
+    "distilbert-base-multilingual-cased",
     num_labels=len(label2id),
     id2label=id2label,
     label2id=label2id,
 )
 training_args = TrainingArguments(
-    output_dir="outdir",
+    output_dir="models",
     learning_rate=2e-5,
     per_device_train_batch_size=16,
     per_device_eval_batch_size=16,

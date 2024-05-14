@@ -6,7 +6,7 @@ input_str = (
     "[Airota&Nekomoe kissaten&VCB-Studio] Yagate Kimi ni Naru [01][Ma10p_1080p][x265_flac_aac].mkv"
 )
 
-p = pipeline("ner", model="outdir/checkpoint-336")
+p = pipeline("ner", model="models/checkpoint-1296")
 result = str(p(input_str))
 result = json.loads(result.replace("'", '"'))
 
